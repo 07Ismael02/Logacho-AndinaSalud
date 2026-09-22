@@ -5,6 +5,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import pe.upeu.andinasalud.domain.model.Cita
 import pe.upeu.andinasalud.domain.model.EstadoCita
+import pe.upeu.andinasalud.domain.model.Modalidad
 import pe.upeu.andinasalud.domain.repository.CitaRepository
 
 data class SolicitudCita(
@@ -12,7 +13,8 @@ data class SolicitudCita(
     val sede: String,
     val fecha: String,
     val hora: String,
-    val motivo: String
+    val motivo: String,
+    val modalidad: Modalidad
 )
 
 data class ErroresSolicitud(
@@ -70,7 +72,8 @@ class SolicitarCitaUseCase(
                 fecha = fecha,
                 hora = hora,
                 motivo = solicitud.motivo.trim(),
-                estado = EstadoCita.Programada(recordatorioActivo = true)
+                estado = EstadoCita.Programada(recordatorioActivo = true),
+                modalidad = solicitud.modalidad
             )
         )
     }

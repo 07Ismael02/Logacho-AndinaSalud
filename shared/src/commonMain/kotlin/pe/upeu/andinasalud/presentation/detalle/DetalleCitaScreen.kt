@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import pe.upeu.andinasalud.domain.model.EstadoCita
 import pe.upeu.andinasalud.presentation.components.Cargando
 import pe.upeu.andinasalud.presentation.components.EstadoError
+import pe.upeu.andinasalud.presentation.components.IconoModalidad
+import androidx.compose.foundation.layout.Row
 
 @Composable
 fun DetalleCitaScreen(id: Long, viewModel: DetalleCitaViewModel, alCancelar: () -> Unit) {
@@ -37,6 +39,10 @@ fun DetalleCitaScreen(id: Long, viewModel: DetalleCitaViewModel, alCancelar: () 
             Text(actual.cita.especialidad, style = MaterialTheme.typography.headlineSmall)
             Text("Médico: ${actual.cita.medico}"); Text("Sede: ${actual.cita.sede}")
             Text("Fecha: ${actual.cita.fecha}"); Text("Hora: ${actual.cita.hora}")
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                IconoModalidad(actual.cita.modalidad)
+                Text("Modalidad: ${actual.cita.modalidad.etiqueta}")
+            }
             Text("Motivo: ${actual.cita.motivo}")
             Text("Estado: ${actual.cita.estado::class.simpleName}", color = MaterialTheme.colorScheme.primary)
             (actual.cita.estado as? EstadoCita.Atendida)?.let { Text("Indicaciones: ${it.indicaciones}") }

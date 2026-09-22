@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import pe.upeu.andinasalud.domain.model.Sede
+import pe.upeu.andinasalud.domain.model.Modalidad
 import pe.upeu.andinasalud.domain.repository.CitaRepository
 import pe.upeu.andinasalud.domain.usecase.ErroresSolicitud
 import pe.upeu.andinasalud.domain.usecase.SolicitarCitaUseCase
@@ -17,6 +18,7 @@ import pe.upeu.andinasalud.domain.usecase.SolicitudInvalidaException
 data class SolicitudUiState(
     val cargando: Boolean = true, val especialidades: List<String> = emptyList(), val sedes: List<Sede> = emptyList(),
     val especialidad: String = "", val sede: String = "", val fecha: String = "", val hora: String = "", val motivo: String = "",
+    val modalidad: Modalidad = Modalidad.Presencial,
     val errores: ErroresSolicitud = ErroresSolicitud(), val enviando: Boolean = false, val mensaje: String? = null, val errorCarga: String? = null
 )
 class SolicitudViewModel(private val repository: CitaRepository, private val solicitarCita: SolicitarCitaUseCase) : ViewModel() {
@@ -33,10 +35,11 @@ class SolicitudViewModel(private val repository: CitaRepository, private val sol
         "especialidad" -> _uiState.value.copy(especialidad = valor); "sede" -> _uiState.value.copy(sede = valor)
         "fecha" -> _uiState.value.copy(fecha = valor); "hora" -> _uiState.value.copy(hora = valor); else -> _uiState.value.copy(motivo = valor)
     } }
+    fun cambiarModalidad(modalidad: Modalidad) { _uiState.value = _uiState.value.copy(modalidad = modalidad) }
     fun enviar(alCompletar: () -> Unit) = viewModelScope.launch {
         val actual = _uiState.value
         _uiState.value = actual.copy(enviando = true, errores = ErroresSolicitud(), mensaje = null)
-        runCatching { solicitarCita(SolicitudCita(actual.especialidad, actual.sede, actual.fecha, actual.hora, actual.motivo)) }
+        runCatching { solicitarCita(SolicitudCita(actual.especialidad, actual.sede, actual.fecha, actual.hora, actual.motivo, actual.modalidad)) }
             .onSuccess {
                 _uiState.value = _uiState.value.copy(enviando = false, mensaje = "Cita solicitada correctamente")
                 delay(600L)

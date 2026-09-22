@@ -14,6 +14,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import pe.upeu.andinasalud.presentation.components.IconoModalidad
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -52,6 +53,10 @@ private fun TarjetaCita(cita: Cita, onClick: () -> Unit) = Card(Modifier.fillMax
         Text(cita.especialidad, style = MaterialTheme.typography.titleMedium)
         Text(cita.medico)
         Text("${cita.fecha} · ${cita.hora} · ${cita.sede}")
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            IconoModalidad(cita.modalidad)
+            Text(cita.modalidad.etiqueta)
+        }
         Text(cita.estado::class.simpleName ?: "Estado", color = MaterialTheme.colorScheme.primary)
     }
 }
