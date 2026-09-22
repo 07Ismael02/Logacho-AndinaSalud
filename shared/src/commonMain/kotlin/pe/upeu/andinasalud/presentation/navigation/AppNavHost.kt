@@ -6,6 +6,9 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,7 +23,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -57,7 +62,8 @@ fun AppNavHost(oscuro: Boolean, cambiarTema: (Boolean) -> Unit) {
                 nav.navigate(item.ruta) { popUpTo(nav.graph.findStartDestination().id) { saveState = true }; launchSingleTop = true; restoreState = true }
             }, { Icon(item.icono, item.titulo) }, label = { Text(item.titulo) })
         } } }
-    ) { padding -> NavHost(nav, Destinos.INICIO, Modifier.padding(padding)) {
+    ) { padding -> Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
+      NavHost(nav, Destinos.INICIO, Modifier.fillMaxSize().widthIn(max = 900.dp)) {
         composable(Destinos.INICIO) { InicioScreen(repository, { nav.navigate(Destinos.CITAS) }, { nav.navigate(Destinos.SOLICITUD) }) }
         composable(Destinos.CITAS) { CitasScreen(koinViewModel()) { citaSeleccionada = it; nav.navigate(Destinos.DETALLE) } }
         composable(Destinos.PERFIL) { PerfilScreen(repository, oscuro, cambiarTema) }
@@ -67,5 +73,6 @@ fun AppNavHost(oscuro: Boolean, cambiarTema: (Boolean) -> Unit) {
         composable(Destinos.DETALLE) {
             DetalleCitaScreen(citaSeleccionada, koinViewModel()) { nav.navigate(Destinos.CITAS) { popUpTo(Destinos.CITAS) { inclusive = true } } }
         }
+      }
     } }
 }
