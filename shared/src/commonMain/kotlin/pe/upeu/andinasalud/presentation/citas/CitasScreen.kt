@@ -34,6 +34,7 @@ fun CitasScreen(viewModel: CitasViewModel, verDetalle: (Long) -> Unit) {
                 FilterChip(estado.filtro == filtro, { viewModel.cambiarFiltro(filtro) }, { Text(filtro.name) })
             }
         }
+        FilterChip(estado.soloHoy, { viewModel.cambiarHoy(!estado.soloHoy) }, { Text("Hoy") })
         when (val fase = estado.fase) {
             FaseCitas.Cargando -> Cargando("Cargando citas...")
             FaseCitas.Vacia -> EstadoVacio("Sin resultados", "No hay citas para el filtro y búsqueda seleccionados.")

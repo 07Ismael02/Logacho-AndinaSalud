@@ -2,11 +2,14 @@ package pe.upeu.andinasalud.data.local
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import pe.upeu.andinasalud.domain.model.Cita
 import pe.upeu.andinasalud.domain.model.EstadoCita
 import pe.upeu.andinasalud.domain.model.Medico
 import pe.upeu.andinasalud.domain.model.Paciente
 import pe.upeu.andinasalud.domain.model.Sede
+import kotlin.time.Clock
 
 object CitasSimuladas {
     val paciente = Paciente(1, "Ismael Logacho", "76543210", "ismael.logacho@upeu.edu.pe", "987654321")
@@ -27,7 +30,7 @@ object CitasSimuladas {
         Cita(1, 1, "Medicina General", "Dra. Ana Quispe", "Ñaña", LocalDate(2026, 9, 25), LocalTime(10, 0), "Control preventivo anual", EstadoCita.Programada(true)),
         Cita(2, 1, "Odontología", "Dr. Marco León", "Chaclacayo", LocalDate(2026, 10, 2), LocalTime(15, 30), "Dolor dental persistente", EstadoCita.Programada(true)),
         Cita(3, 1, "Nutrición", "Lic. Elena Soto", "Santa Anita", LocalDate(2026, 10, 12), LocalTime(9, 15), "Evaluación de plan alimenticio", EstadoCita.Programada(false)),
-        Cita(4, 1, "Psicología", "Ps. Mónica Ruiz", "Chosica", LocalDate(2026, 8, 14), LocalTime(11, 0), "Seguimiento de bienestar emocional", EstadoCita.Atendida("Mantener ejercicios de respiración y control en cuatro semanas.")),
+        Cita(4, 1, "Psicología", "Ps. Mónica Ruiz", "Chosica", Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date, LocalTime(8, 0), "Seguimiento de bienestar emocional", EstadoCita.Atendida("Mantener ejercicios de respiración y control en cuatro semanas.")),
         Cita(5, 1, "Pediatría", "Dra. Rosa Huamán", "Ñaña", LocalDate(2026, 7, 3), LocalTime(8, 30), "Consulta de control pediátrico", EstadoCita.Atendida("Continuar suplemento indicado y control semestral.")),
         Cita(6, 1, "Medicina General", "Dr. Luis Rojas", "Santa Anita", LocalDate(2026, 9, 18), LocalTime(16, 0), "Revisión de resultados clínicos", EstadoCita.Cancelada("Conflicto con horario académico", true))
     )
