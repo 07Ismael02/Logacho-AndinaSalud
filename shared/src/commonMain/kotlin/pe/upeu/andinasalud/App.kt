@@ -7,10 +7,13 @@ import org.koin.compose.viewmodel.koinViewModel
 import pe.upeu.andinasalud.presentation.navigation.AppNavHost
 import pe.upeu.andinasalud.presentation.theme.AndinaSaludTheme
 import pe.upeu.andinasalud.presentation.perfil.PerfilViewModel
+import pe.upeu.andinasalud.presentation.citas.ResumenCitasViewModel
 
 @Composable
 fun App() {
     val perfilViewModel = koinViewModel<PerfilViewModel>()
     val perfil by perfilViewModel.uiState.collectAsState()
-    AndinaSaludTheme(perfil.oscuro) { AppNavHost(perfilViewModel) }
+    val resumenViewModel = koinViewModel<ResumenCitasViewModel>()
+    val resumen by resumenViewModel.uiState.collectAsState()
+    AndinaSaludTheme(perfil.oscuro) { AppNavHost(perfilViewModel, resumen) }
 }

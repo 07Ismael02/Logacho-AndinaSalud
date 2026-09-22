@@ -1,11 +1,13 @@
 package pe.upeu.andinasalud.domain.repository
 
+import kotlinx.coroutines.flow.StateFlow
 import pe.upeu.andinasalud.domain.model.Cita
 import pe.upeu.andinasalud.domain.model.Medico
 import pe.upeu.andinasalud.domain.model.Paciente
 import pe.upeu.andinasalud.domain.model.Sede
 
 interface CitaRepository {
+    val citasActuales: StateFlow<List<Cita>>
     suspend fun obtenerCitas(): List<Cita>
     suspend fun obtenerCita(id: Long): Cita?
     suspend fun guardarCita(cita: Cita): Cita

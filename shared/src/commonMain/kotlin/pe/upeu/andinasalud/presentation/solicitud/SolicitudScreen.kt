@@ -23,7 +23,7 @@ import pe.upeu.andinasalud.presentation.components.Cargando
 import pe.upeu.andinasalud.presentation.components.EstadoError
 
 @Composable
-fun SolicitudScreen(viewModel: SolicitudViewModel, alCompletar: () -> Unit) {
+fun SolicitudScreen(viewModel: SolicitudViewModel, puedeSolicitar: Boolean, alCompletar: () -> Unit) {
     val estado by viewModel.uiState.collectAsState()
     when {
         estado.cargando -> Cargando("Preparando formulario...")
@@ -41,7 +41,8 @@ fun SolicitudScreen(viewModel: SolicitudViewModel, alCompletar: () -> Unit) {
             ErrorCampo(estado.errores.general)
             estado.mensaje?.let { Text(it) }
             if (estado.enviando) LinearProgressIndicator(Modifier.fillMaxWidth())
-            Button({ viewModel.enviar(alCompletar) }, Modifier.fillMaxWidth(), enabled = !estado.enviando) { Text("Solicitar cita") }
+            if (!puedeSolicitar) Text("Límite de 3 citas programadas alcanzado")
+            Button({ viewModel.enviar(alCompletar) }, Modifier.fillMaxWidth(), enabled = !estado.enviando && puedeSolicitar) { Text("Solicitar cita") }
         }
     }
 }
