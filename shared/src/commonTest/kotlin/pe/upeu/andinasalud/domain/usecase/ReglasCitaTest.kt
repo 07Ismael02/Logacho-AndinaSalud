@@ -5,12 +5,19 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import pe.upeu.andinasalud.domain.model.Cita
 import pe.upeu.andinasalud.domain.model.EstadoCita
+import pe.upeu.andinasalud.domain.model.Modalidad
+import pe.upeu.andinasalud.data.local.CitasSimuladas
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.test.assertEquals
 
 class ReglasCitaTest {
+    @Test fun seedConservaSeisCitasConAmbasModalidades() {
+        assertEquals(6, CitasSimuladas.citas.size)
+        assertTrue(CitasSimuladas.citas.any { it.modalidad == Modalidad.Presencial })
+        assertTrue(CitasSimuladas.citas.any { it.modalidad == Modalidad.Teleconsulta })
+    }
     private val ahora = LocalDateTime(2026, 9, 22, 10, 0)
 
     @Test fun rn1_rechazaFechaPasadaYAceptaFutura() {
@@ -46,5 +53,5 @@ class ReglasCitaTest {
     }
 
     private fun cita(id: Long, fecha: LocalDate, hora: LocalTime, estado: EstadoCita = EstadoCita.Programada(true)) =
-        Cita(id, 1, "Medicina General", "Dra. Ana Quispe", "Ñaña", fecha, hora, "Control preventivo", estado)
+        Cita(id, 1, "Medicina General", "Dra. Ana Quispe", "Ñaña", fecha, hora, "Control preventivo", estado, Modalidad.Presencial)
 }

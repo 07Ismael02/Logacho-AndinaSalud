@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import pe.upeu.andinasalud.presentation.components.Cargando
 import pe.upeu.andinasalud.presentation.components.EstadoError
+import pe.upeu.andinasalud.domain.model.Modalidad
+import pe.upeu.andinasalud.presentation.components.IconoModalidad
 
 @Composable
 fun SolicitudScreen(viewModel: SolicitudViewModel, puedeSolicitar: Boolean, alCompletar: () -> Unit) {
@@ -35,6 +37,16 @@ fun SolicitudScreen(viewModel: SolicitudViewModel, puedeSolicitar: Boolean, alCo
             Text("Sede"); Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 estado.sedes.forEach { FilterChip(estado.sede == it.nombre, { viewModel.actualizar("sede", it.nombre) }, { Text(it.nombre) }) }
             }; ErrorCampo(estado.errores.sede)
+            Text("Modalidad"); Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Modalidad.entries.forEach { modalidad ->
+                    FilterChip(
+                        selected = estado.modalidad == modalidad,
+                        onClick = { viewModel.cambiarModalidad(modalidad) },
+                        label = { Text(modalidad.etiqueta) },
+                        leadingIcon = { IconoModalidad(modalidad) }
+                    )
+                }
+            }
             Campo("Fecha (AAAA-MM-DD)", estado.fecha, estado.errores.fecha) { viewModel.actualizar("fecha", it) }
             Campo("Hora (HH:MM)", estado.hora, estado.errores.hora) { viewModel.actualizar("hora", it) }
             Campo("Motivo", estado.motivo, estado.errores.motivo) { viewModel.actualizar("motivo", it) }
