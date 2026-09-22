@@ -8,6 +8,7 @@ import pe.upeu.andinasalud.domain.model.EstadoCita
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.test.assertEquals
 
 class ReglasCitaTest {
     private val ahora = LocalDateTime(2026, 9, 22, 10, 0)
@@ -21,6 +22,8 @@ class ReglasCitaTest {
         val citas = (1L..3L).map { cita(it, LocalDate(2026, 10, it.toInt()), LocalTime(10, 0)) }
         assertTrue(ReglasCita.excedeMaximoProgramadas(citas, 1))
         assertFalse(ReglasCita.excedeMaximoProgramadas(citas.take(2), 1))
+        assertEquals(3, ReglasCita.cantidadProgramadas(citas, 1))
+        assertEquals(2, ReglasCita.cantidadProgramadas(citas.take(2), 1))
     }
 
     @Test fun rn3_soloPermiteCancelarProgramadaConMasDe24Horas() {

@@ -14,6 +14,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -33,6 +35,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import org.koin.compose.viewmodel.koinViewModel
 import pe.upeu.andinasalud.presentation.citas.CitasScreen
+import pe.upeu.andinasalud.presentation.citas.ResumenCitasUiState
 import pe.upeu.andinasalud.presentation.detalle.DetalleCitaScreen
 import pe.upeu.andinasalud.presentation.inicio.InicioScreen
 import pe.upeu.andinasalud.presentation.perfil.PerfilScreen
@@ -44,7 +47,7 @@ private val principales = listOf(ItemNav(Destinos.INICIO, "Inicio", Icons.Defaul
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavHost(perfilViewModel: PerfilViewModel) {
+fun AppNavHost(perfilViewModel: PerfilViewModel, resumen: ResumenCitasUiState) {
     val nav = rememberNavController()
     val entrada by nav.currentBackStackEntryAsState()
     val ruta = entrada?.destination?.route ?: Destinos.INICIO
@@ -58,14 +61,16 @@ fun AppNavHost(perfilViewModel: PerfilViewModel) {
         bottomBar = { if (esPrincipal) NavigationBar { principales.forEach { item ->
             NavigationBarItem(ruta == item.ruta, {
                 nav.navigate(item.ruta) { popUpTo(nav.graph.findStartDestination().id) { saveState = true }; launchSingleTop = true; restoreState = true }
-            }, { Icon(item.icono, item.titulo) }, label = { Text(item.titulo) })
+            }, { if (item.ruta == Destinos.CITAS && !resumen.cargando) {
+                BadgedBox(badge = { Badge { Text(resumen.programadas.toString()) } }) { Icon(item.icono, item.titulo) }
+            } else Icon(item.icono, item.titulo) }, label = { Text(item.titulo) })
         } } }
     ) { padding -> Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
       NavHost(nav, Destinos.INICIO, Modifier.fillMaxSize().widthIn(max = 900.dp)) {
-        composable(Destinos.INICIO) { InicioScreen(koinViewModel(), { nav.navigate(Destinos.CITAS) }, { nav.navigate(Destinos.SOLICITUD) }) }
+        composable(Destinos.INICIO) { InicioScreen(koinViewModel(), resumen.puedeSolicitar, { nav.navigate(Destinos.CITAS) }, { nav.navigate(Destinos.SOLICITUD) }) }
         composable(Destinos.CITAS) { CitasScreen(koinViewModel()) { citaSeleccionada = it; nav.navigate(Destinos.DETALLE) } }
         composable(Destinos.PERFIL) { PerfilScreen(perfilViewModel) }
-        composable(Destinos.SOLICITUD) { SolicitudScreen(koinViewModel()) {
+        composable(Destinos.SOLICITUD) { SolicitudScreen(koinViewModel(), resumen.puedeSolicitar) {
             nav.navigate(Destinos.CITAS) { popUpTo(Destinos.SOLICITUD) { inclusive = true }; launchSingleTop = true }
         } }
         composable(Destinos.DETALLE) {

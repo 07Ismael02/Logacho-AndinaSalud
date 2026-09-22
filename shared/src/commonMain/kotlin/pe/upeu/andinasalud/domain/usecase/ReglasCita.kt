@@ -10,8 +10,11 @@ import kotlin.time.Duration.Companion.hours
 object ReglasCita {
     fun fechaEsFutura(fechaHora: LocalDateTime, ahora: LocalDateTime): Boolean = fechaHora > ahora
 
+    fun cantidadProgramadas(citas: List<Cita>, pacienteId: Long): Int =
+        citas.count { it.pacienteId == pacienteId && it.estado is EstadoCita.Programada }
+
     fun excedeMaximoProgramadas(citas: List<Cita>, pacienteId: Long): Boolean =
-        citas.count { it.pacienteId == pacienteId && it.estado is EstadoCita.Programada } >= 3
+        cantidadProgramadas(citas, pacienteId) >= 3
 
     fun puedeCancelar(cita: Cita, ahora: LocalDateTime): Boolean {
         if (cita.estado !is EstadoCita.Programada) return false

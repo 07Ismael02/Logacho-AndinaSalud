@@ -20,7 +20,7 @@ import pe.upeu.andinasalud.presentation.components.Cargando
 import pe.upeu.andinasalud.presentation.components.EstadoError
 
 @Composable
-fun InicioScreen(viewModel: InicioViewModel, irCitas: () -> Unit, solicitar: () -> Unit) {
+fun InicioScreen(viewModel: InicioViewModel, puedeSolicitar: Boolean, irCitas: () -> Unit, solicitar: () -> Unit) {
     val estado by viewModel.uiState.collectAsState()
     when (val actual = estado) {
         InicioUiState.Cargando -> Cargando()
@@ -41,8 +41,9 @@ fun InicioScreen(viewModel: InicioViewModel, irCitas: () -> Unit, solicitar: () 
                 } }
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedButton(irCitas, Modifier.weight(1f)) { Text("Mis citas") }
-                    Button(solicitar, Modifier.weight(1f)) { Text("Solicitar cita") }
+                    Button(solicitar, Modifier.weight(1f), enabled = puedeSolicitar) { Text("Solicitar cita") }
                 }
+                if (!puedeSolicitar) Text("Límite de 3 citas programadas alcanzado", color = MaterialTheme.colorScheme.secondary)
             }
         }
     }

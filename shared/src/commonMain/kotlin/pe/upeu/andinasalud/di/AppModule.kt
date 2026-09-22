@@ -12,6 +12,7 @@ import pe.upeu.andinasalud.domain.usecase.CancelarCitaUseCase
 import pe.upeu.andinasalud.domain.usecase.ObtenerCitasUseCase
 import pe.upeu.andinasalud.domain.usecase.SolicitarCitaUseCase
 import pe.upeu.andinasalud.presentation.citas.CitasViewModel
+import pe.upeu.andinasalud.presentation.citas.ResumenCitasViewModel
 import pe.upeu.andinasalud.presentation.detalle.DetalleCitaViewModel
 import pe.upeu.andinasalud.presentation.inicio.InicioViewModel
 import pe.upeu.andinasalud.presentation.perfil.PerfilViewModel
@@ -27,6 +28,7 @@ private val domainModule = module {
 private val presentationModule = module {
     viewModelOf(::InicioViewModel); viewModelOf(::CitasViewModel); viewModelOf(::DetalleCitaViewModel)
     viewModelOf(::SolicitudViewModel); viewModelOf(::PerfilViewModel)
+    viewModelOf(::ResumenCitasViewModel)
 }
 internal expect val platformModule: Module
 fun initKoin() {
