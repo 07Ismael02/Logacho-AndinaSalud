@@ -5,6 +5,7 @@ import kotlinx.datetime.toLocalDateTime
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import pe.upeu.andinasalud.data.repository.CitaRepositoryFake
 import pe.upeu.andinasalud.domain.repository.CitaRepository
@@ -28,7 +29,7 @@ private val domainModule = module {
     factory { ReprogramarCitaUseCase(get()) { Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()) } }
 }
 private val presentationModule = module {
-    viewModelOf(::InicioViewModel); viewModelOf(::CitasViewModel); viewModelOf(::DetalleCitaViewModel)
+    viewModelOf(::InicioViewModel); viewModel { CitasViewModel(get(), get()) }; viewModelOf(::DetalleCitaViewModel)
     viewModelOf(::SolicitudViewModel); viewModelOf(::PerfilViewModel)
     viewModelOf(::ResumenCitasViewModel)
 }
