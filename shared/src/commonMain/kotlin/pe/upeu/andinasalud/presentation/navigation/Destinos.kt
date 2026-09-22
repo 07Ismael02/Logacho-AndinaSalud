@@ -1,0 +1,9 @@
+package pe.upeu.andinasalud.presentation.navigation
+
+object Destinos {
+    const val INICIO = "inicio"
+    const val CITAS = "citas"
+    const val PERFIL = "perfil"
+    const val SOLICITUD = "solicitud"
+    const val DETALLE = "detalle"
+}
