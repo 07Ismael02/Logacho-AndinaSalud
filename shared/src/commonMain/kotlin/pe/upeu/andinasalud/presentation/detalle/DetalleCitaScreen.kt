@@ -46,8 +46,12 @@ fun DetalleCitaScreen(id: Long, viewModel: DetalleCitaViewModel, alCancelar: () 
     }
     if (dialogo) AlertDialog(
         onDismissRequest = { dialogo = false }, title = { Text("Confirmar cancelación") },
-        text = { OutlinedTextField(motivo, { motivo = it }, label = { Text("Motivo (10 a 200 caracteres)") }) },
-        confirmButton = { TextButton({ dialogo = false; viewModel.cancelar(id, motivo, alCancelar) }) { Text("Confirmar") } },
+        text = { OutlinedTextField(
+            motivo, { motivo = it }, label = { Text("Motivo (10 a 200 caracteres)") },
+            isError = motivo.isNotEmpty() && motivo.trim().length !in 10..200,
+            supportingText = { if (motivo.isNotEmpty() && motivo.trim().length !in 10..200) Text("Ingresa entre 10 y 200 caracteres") }
+        ) },
+        confirmButton = { TextButton({ dialogo = false; viewModel.cancelar(id, motivo, alCancelar) }, enabled = motivo.trim().length in 10..200) { Text("Confirmar") } },
         dismissButton = { TextButton({ dialogo = false }) { Text("Volver") } }
     )
 }

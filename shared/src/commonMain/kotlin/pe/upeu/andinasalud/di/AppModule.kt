@@ -13,6 +13,8 @@ import pe.upeu.andinasalud.domain.usecase.ObtenerCitasUseCase
 import pe.upeu.andinasalud.domain.usecase.SolicitarCitaUseCase
 import pe.upeu.andinasalud.presentation.citas.CitasViewModel
 import pe.upeu.andinasalud.presentation.detalle.DetalleCitaViewModel
+import pe.upeu.andinasalud.presentation.inicio.InicioViewModel
+import pe.upeu.andinasalud.presentation.perfil.PerfilViewModel
 import pe.upeu.andinasalud.presentation.solicitud.SolicitudViewModel
 import kotlin.time.Clock
 
@@ -23,7 +25,8 @@ private val domainModule = module {
     factory { CancelarCitaUseCase(get()) { Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()) } }
 }
 private val presentationModule = module {
-    viewModelOf(::CitasViewModel); viewModelOf(::DetalleCitaViewModel); viewModelOf(::SolicitudViewModel)
+    viewModelOf(::InicioViewModel); viewModelOf(::CitasViewModel); viewModelOf(::DetalleCitaViewModel)
+    viewModelOf(::SolicitudViewModel); viewModelOf(::PerfilViewModel)
 }
 internal expect val platformModule: Module
 fun initKoin() {

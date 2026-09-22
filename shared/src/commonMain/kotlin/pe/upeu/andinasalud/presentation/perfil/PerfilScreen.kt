@@ -11,35 +11,29 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import pe.upeu.andinasalud.domain.model.Paciente
-import pe.upeu.andinasalud.domain.repository.CitaRepository
 import pe.upeu.andinasalud.presentation.components.Cargando
 import pe.upeu.andinasalud.presentation.components.EstadoError
 
 @Composable
-fun PerfilScreen(repository: CitaRepository, oscuro: Boolean, cambiarTema: (Boolean) -> Unit) {
-    var paciente by remember { mutableStateOf<Result<Paciente>?>(null) }
-    LaunchedEffect(Unit) { paciente = runCatching { repository.obtenerPaciente() } }
-    when {
-        paciente == null -> Cargando()
-        paciente!!.isFailure -> EstadoError("No se pudo cargar el perfil") { paciente = null }
-        else -> Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+fun PerfilScreen(viewModel: PerfilViewModel) {
+    val estado by viewModel.uiState.collectAsState()
+    when (val fase = estado.fase) {
+        FasePerfil.Cargando -> Cargando()
+        is FasePerfil.Error -> EstadoError(fase.mensaje, viewModel::cargar)
+        is FasePerfil.Contenido -> Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text("Mi perfil", style = MaterialTheme.typography.headlineMedium)
             Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                val valor = paciente!!.getOrThrow()
+                val valor = fase.paciente
                 Text(valor.nombre, style = MaterialTheme.typography.titleLarge)
                 Text("Documento: ${valor.documento}"); Text("Correo: ${valor.correo}"); Text("Teléfono: ${valor.telefono}")
             } }
             Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
-                Text("Modo oscuro"); Switch(oscuro, onCheckedChange = cambiarTema)
+                Text("Modo oscuro"); Switch(estado.oscuro, onCheckedChange = viewModel::cambiarTema)
             }
         }
     }

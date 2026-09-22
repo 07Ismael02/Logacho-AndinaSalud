@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import pe.upeu.andinasalud.domain.model.Sede
 import pe.upeu.andinasalud.domain.repository.CitaRepository
 import pe.upeu.andinasalud.domain.usecase.ErroresSolicitud
@@ -36,7 +37,11 @@ class SolicitudViewModel(private val repository: CitaRepository, private val sol
         val actual = _uiState.value
         _uiState.value = actual.copy(enviando = true, errores = ErroresSolicitud(), mensaje = null)
         runCatching { solicitarCita(SolicitudCita(actual.especialidad, actual.sede, actual.fecha, actual.hora, actual.motivo)) }
-            .onSuccess { _uiState.value = _uiState.value.copy(enviando = false, mensaje = "Cita solicitada correctamente"); alCompletar() }
+            .onSuccess {
+                _uiState.value = _uiState.value.copy(enviando = false, mensaje = "Cita solicitada correctamente")
+                delay(600L)
+                alCompletar()
+            }
             .onFailure { error -> _uiState.value = _uiState.value.copy(enviando = false, errores = (error as? SolicitudInvalidaException)?.errores ?: ErroresSolicitud(general = error.message ?: "No se pudo solicitar la cita")) }
     }
 }

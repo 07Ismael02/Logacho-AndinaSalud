@@ -12,33 +12,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import pe.upeu.andinasalud.domain.model.Cita
-import pe.upeu.andinasalud.domain.model.Paciente
-import pe.upeu.andinasalud.domain.repository.CitaRepository
 import pe.upeu.andinasalud.presentation.components.Cargando
 import pe.upeu.andinasalud.presentation.components.EstadoError
 
 @Composable
-fun InicioScreen(repository: CitaRepository, irCitas: () -> Unit, solicitar: () -> Unit) {
-    var datos by remember { mutableStateOf<Result<Pair<Paciente, Cita?>>?>(null) }
-    fun cargar() { datos = null }
-    LaunchedEffect(datos) {
-        if (datos == null) datos = runCatching {
-            repository.obtenerPaciente() to repository.obtenerCitas().firstOrNull { it.estado is pe.upeu.andinasalud.domain.model.EstadoCita.Programada }
-        }
-    }
-    when {
-        datos == null -> Cargando()
-        datos!!.isFailure -> EstadoError("No se pudo cargar el inicio", ::cargar)
-        else -> {
-            val (paciente, proxima) = datos!!.getOrThrow()
+fun InicioScreen(viewModel: InicioViewModel, irCitas: () -> Unit, solicitar: () -> Unit) {
+    val estado by viewModel.uiState.collectAsState()
+    when (val actual = estado) {
+        InicioUiState.Cargando -> Cargando()
+        is InicioUiState.Error -> EstadoError(actual.mensaje, viewModel::cargar)
+        is InicioUiState.Contenido -> {
+            val paciente = actual.paciente
+            val proxima = actual.proximaCita
             Column(Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text("Hola, ${paciente.nombre}", style = MaterialTheme.typography.headlineMedium)
                 Text("Gestiona tu atención en AndinaSalud")

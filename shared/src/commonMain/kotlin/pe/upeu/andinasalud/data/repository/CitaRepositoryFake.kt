@@ -15,7 +15,7 @@ class CitaRepositoryFake : CitaRepository {
     private val citas = CitasSimuladas.citas.toMutableList()
 
     override suspend fun obtenerCitas(): List<Cita> { delay(800L); return mutex.withLock { citas.toList() } }
-    override suspend fun obtenerCita(id: Long): Cita? { delay(250L); return mutex.withLock { citas.firstOrNull { it.id == id } } }
+    override suspend fun obtenerCita(id: Long): Cita? { delay(800L); return mutex.withLock { citas.firstOrNull { it.id == id } } }
     override suspend fun guardarCita(cita: Cita): Cita { delay(250L); return mutex.withLock {
         cita.copy(id = (citas.maxOfOrNull { it.id } ?: 0L) + 1).also { citas += it }
     } }
@@ -25,7 +25,7 @@ class CitaRepositoryFake : CitaRepository {
         citas[indice] = cita
         cita
     } }
-    override suspend fun obtenerPaciente(): Paciente = CitasSimuladas.paciente
-    override suspend fun obtenerSedes(): List<Sede> = CitasSimuladas.sedes
-    override suspend fun obtenerMedicos(): List<Medico> = CitasSimuladas.medicos
+    override suspend fun obtenerPaciente(): Paciente { delay(800L); return CitasSimuladas.paciente }
+    override suspend fun obtenerSedes(): List<Sede> { delay(800L); return CitasSimuladas.sedes }
+    override suspend fun obtenerMedicos(): List<Medico> { delay(800L); return CitasSimuladas.medicos }
 }

@@ -31,13 +31,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import pe.upeu.andinasalud.domain.repository.CitaRepository
 import pe.upeu.andinasalud.presentation.citas.CitasScreen
 import pe.upeu.andinasalud.presentation.detalle.DetalleCitaScreen
 import pe.upeu.andinasalud.presentation.inicio.InicioScreen
 import pe.upeu.andinasalud.presentation.perfil.PerfilScreen
+import pe.upeu.andinasalud.presentation.perfil.PerfilViewModel
 import pe.upeu.andinasalud.presentation.solicitud.SolicitudScreen
 
 private data class ItemNav(val ruta: String, val titulo: String, val icono: ImageVector)
@@ -45,13 +44,12 @@ private val principales = listOf(ItemNav(Destinos.INICIO, "Inicio", Icons.Defaul
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavHost(oscuro: Boolean, cambiarTema: (Boolean) -> Unit) {
+fun AppNavHost(perfilViewModel: PerfilViewModel) {
     val nav = rememberNavController()
     val entrada by nav.currentBackStackEntryAsState()
     val ruta = entrada?.destination?.route ?: Destinos.INICIO
     val esPrincipal = principales.any { it.ruta == ruta }
     val titulo = principales.firstOrNull { it.ruta == ruta }?.titulo ?: if (ruta == Destinos.SOLICITUD) "Solicitar cita" else "Detalle de cita"
-    val repository: CitaRepository = koinInject()
     var citaSeleccionada by rememberSaveable { mutableStateOf(-1L) }
     Scaffold(
         topBar = { TopAppBar(title = { Text(titulo) }, navigationIcon = {
@@ -64,9 +62,9 @@ fun AppNavHost(oscuro: Boolean, cambiarTema: (Boolean) -> Unit) {
         } } }
     ) { padding -> Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
       NavHost(nav, Destinos.INICIO, Modifier.fillMaxSize().widthIn(max = 900.dp)) {
-        composable(Destinos.INICIO) { InicioScreen(repository, { nav.navigate(Destinos.CITAS) }, { nav.navigate(Destinos.SOLICITUD) }) }
+        composable(Destinos.INICIO) { InicioScreen(koinViewModel(), { nav.navigate(Destinos.CITAS) }, { nav.navigate(Destinos.SOLICITUD) }) }
         composable(Destinos.CITAS) { CitasScreen(koinViewModel()) { citaSeleccionada = it; nav.navigate(Destinos.DETALLE) } }
-        composable(Destinos.PERFIL) { PerfilScreen(repository, oscuro, cambiarTema) }
+        composable(Destinos.PERFIL) { PerfilScreen(perfilViewModel) }
         composable(Destinos.SOLICITUD) { SolicitudScreen(koinViewModel()) {
             nav.navigate(Destinos.CITAS) { popUpTo(Destinos.SOLICITUD) { inclusive = true }; launchSingleTop = true }
         } }
