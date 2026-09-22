@@ -60,7 +60,17 @@ fun AppNavHost(perfilViewModel: PerfilViewModel, resumen: ResumenCitasUiState) {
         }) },
         bottomBar = { if (esPrincipal) NavigationBar { principales.forEach { item ->
             NavigationBarItem(ruta == item.ruta, {
-                nav.navigate(item.ruta) { popUpTo(nav.graph.findStartDestination().id) { saveState = true }; launchSingleTop = true; restoreState = true }
+                if (ruta != item.ruta) {
+                    if (item.ruta == Destinos.INICIO) {
+                        nav.popBackStack(Destinos.INICIO, inclusive = false)
+                    } else {
+                        nav.navigate(item.ruta) {
+                            popUpTo(nav.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                }
             }, { if (item.ruta == Destinos.CITAS && !resumen.cargando) {
                 BadgedBox(badge = { Badge { Text(resumen.programadas.toString()) } }) { Icon(item.icono, item.titulo) }
             } else Icon(item.icono, item.titulo) }, label = { Text(item.titulo) })
