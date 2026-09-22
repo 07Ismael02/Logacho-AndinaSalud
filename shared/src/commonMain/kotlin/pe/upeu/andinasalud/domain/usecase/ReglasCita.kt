@@ -8,6 +8,8 @@ import pe.upeu.andinasalud.domain.model.EstadoCita
 import kotlin.time.Duration.Companion.hours
 
 object ReglasCita {
+    enum class ErrorHorario { PASADO, OCUPADO }
+
     fun fechaEsFutura(fechaHora: LocalDateTime, ahora: LocalDateTime): Boolean = fechaHora > ahora
 
     fun cantidadProgramadas(citas: List<Cita>, pacienteId: Long): Int =
@@ -28,11 +30,22 @@ object ReglasCita {
     fun existeDuplicada(
         citas: List<Cita>,
         pacienteId: Long,
-        fechaHora: LocalDateTime
+        fechaHora: LocalDateTime,
+        excluirCitaId: Long? = null
     ): Boolean = citas.any {
         it.pacienteId == pacienteId &&
+            it.id != excluirCitaId &&
             it.estado is EstadoCita.Programada &&
             it.fecha == fechaHora.date &&
             it.hora == fechaHora.time
+    }
+
+    fun validarHorario(
+        citas: List<Cita>, pacienteId: Long, fechaHora: LocalDateTime,
+        ahora: LocalDateTime, excluirCitaId: Long? = null
+    ): ErrorHorario? = when {
+        !fechaEsFutura(fechaHora, ahora) -> ErrorHorario.PASADO
+        existeDuplicada(citas, pacienteId, fechaHora, excluirCitaId) -> ErrorHorario.OCUPADO
+        else -> null
     }
 }

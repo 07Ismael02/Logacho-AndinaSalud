@@ -13,5 +13,6 @@ data class Cita(
     val hora: LocalTime,
     val motivo: String,
     val estado: EstadoCita,
-    val modalidad: Modalidad
+    val modalidad: Modalidad,
+    val reprogramaciones: List<Reprogramacion> = emptyList()
 )

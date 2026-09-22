@@ -50,11 +50,13 @@ class SolicitarCitaUseCase(
         val paciente = repository.obtenerPaciente()
         val citas = repository.obtenerCitas()
         val fechaHora = LocalDateTime(fecha!!, hora!!)
-        errores = when {
-            !ReglasCita.fechaEsFutura(fechaHora, ahora()) -> errores.copy(fecha = "La cita debe ser posterior al momento actual")
-            ReglasCita.excedeMaximoProgramadas(citas, paciente.id) -> errores.copy(general = "Solo puedes tener 3 citas programadas")
-            ReglasCita.existeDuplicada(citas, paciente.id, fechaHora) -> errores.copy(general = "Ya tienes una cita programada en esa fecha y hora")
-            else -> errores
+        errores = when (ReglasCita.validarHorario(citas, paciente.id, fechaHora, ahora())) {
+            ReglasCita.ErrorHorario.PASADO -> errores.copy(fecha = "La cita debe ser posterior al momento actual")
+            ReglasCita.ErrorHorario.OCUPADO -> errores.copy(general = "Ya tienes una cita programada en esa fecha y hora")
+            null -> errores
+        }
+        if (ReglasCita.excedeMaximoProgramadas(citas, paciente.id)) {
+            errores = errores.copy(general = "Solo puedes tener 3 citas programadas")
         }
         val medico = repository.obtenerMedicos().firstOrNull {
             it.especialidad == solicitud.especialidad && it.sedes.any { sede -> sede.nombre == solicitud.sede }

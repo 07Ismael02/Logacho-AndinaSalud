@@ -12,16 +12,28 @@ import kotlinx.datetime.toLocalDateTime
 import pe.upeu.andinasalud.domain.model.Cita
 import pe.upeu.andinasalud.domain.model.EstadoCita
 import pe.upeu.andinasalud.domain.usecase.ObtenerCitasUseCase
+import pe.upeu.andinasalud.domain.repository.CitaRepository
 import kotlin.time.Clock
 
 class CitasViewModel(
     private val obtenerCitas: ObtenerCitasUseCase,
+    private val repository: CitaRepository,
     private val hoy: () -> LocalDate = { Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date }
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CitasUiState())
     val uiState: StateFlow<CitasUiState> = _uiState.asStateFlow()
     private var todas = emptyList<Cita>()
-    init { cargar() }
+    init {
+        cargar()
+        viewModelScope.launch {
+            repository.citasActuales.collect { citas ->
+                if (_uiState.value.fase != FaseCitas.Cargando) {
+                    todas = citas.sortedWith(compareBy<Cita> { it.fecha }.thenBy { it.hora })
+                    aplicarFiltros()
+                }
+            }
+        }
+    }
     fun cargar() = viewModelScope.launch {
         _uiState.value = _uiState.value.copy(fase = FaseCitas.Cargando)
         runCatching { obtenerCitas() }.onSuccess { todas = it; aplicarFiltros() }
